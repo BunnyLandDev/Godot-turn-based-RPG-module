@@ -1,0 +1,91 @@
+[gd_scene load_steps=12 format=3 uid="uid://h8rjgxa5y57n"]
+
+[ext_resource type="Script" uid="uid://cf0glh5ehxdf5" path="res://Scripts/entity.gd" id="1_8mg3u"]
+[ext_resource type="Script" uid="uid://dxtv2va7qlf6u" path="res://Scripts/attack_node.gd" id="1_oshwv"]
+[ext_resource type="Script" uid="uid://br1fv1rlu85m3" path="res://Scripts/health_node.gd" id="2_8mg3u"]
+[ext_resource type="Texture2D" uid="uid://df784uxxlppoh" path="res://Resources/Textures/test_player.png" id="4_6kn8a"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vuidx"]
+atlas = ExtResource("4_6kn8a")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3qk4t"]
+atlas = ExtResource("4_6kn8a")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uh55k"]
+atlas = ExtResource("4_6kn8a")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_oauuq"]
+atlas = ExtResource("4_6kn8a")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lgv4k"]
+atlas = ExtResource("4_6kn8a")
+region = Rect2(128, 0, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_3fgo3"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vuidx")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3qk4t")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_uh55k")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_oauuq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lgv4k")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6kn8a"]
+bg_color = Color(1.1888295e-05, 0.7799393, 0.16832533, 1)
+
+[node name="Entity" type="Control" node_paths=PackedStringArray("HealthNode", "AttackNode")]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_8mg3u")
+HealthNode = NodePath("HealthNode")
+AttackNode = NodePath("AttackNode")
+
+[node name="AttackNode" type="Node" parent="."]
+script = ExtResource("1_oshwv")
+
+[node name="HealthNode" type="Node" parent="."]
+script = ExtResource("2_8mg3u")
+
+[node name="EntitySprite" type="AnimatedSprite2D" parent="."]
+scale = Vector2(2, 2)
+sprite_frames = SubResource("SpriteFrames_3fgo3")
+animation = &"idle"
+autoplay = "idle"
+frame_progress = 0.86527735
+
+[node name="HealthBar" type="ProgressBar" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -0.025
+anchor_top = -0.90000004
+anchor_right = -0.025
+anchor_bottom = -0.90000004
+offset_left = -58.0
+offset_top = -27.0
+offset_right = 58.0
+grow_horizontal = 2
+theme_override_styles/fill = SubResource("StyleBoxFlat_6kn8a")
+max_value = 1.0
+value = 1.0
+
+[connection signal="animation_finished" from="EntitySprite" to="." method="_on_entity_sprite_animation_finished"]

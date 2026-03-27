@@ -1,0 +1,10 @@
+[gd_resource type="Resource" load_steps=2 format=3 uid="uid://b6w8x6iq1vpwu"]
+
+[ext_resource type="Script" uid="uid://cj5fodsqtvsko" path="res://Scripts/SkillResource.gd" id="1_66voy"]
+
+[resource]
+script = ExtResource("1_66voy")
+SkillName = "Quick Attack"
+SkillPower = 50.0
+SkillType = "Dex"
+SkillCooldown = 3

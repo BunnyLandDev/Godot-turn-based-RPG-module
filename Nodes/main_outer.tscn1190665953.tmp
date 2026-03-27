@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3 uid="uid://ca0b0ivnt6c73"]
+
+[ext_resource type="PackedScene" uid="uid://h8rjgxa5y57n" path="res://Nodes/entity.tscn" id="1_bllf4"]
+[ext_resource type="Script" uid="uid://c1xuni8g82iha" path="res://Scripts/main_outer.gd" id="1_nrkpc"]
+
+[node name="MainOuter" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_nrkpc")
+
+[node name="Entity" parent="." instance=ExtResource("1_bllf4")]
+layout_mode = 0
