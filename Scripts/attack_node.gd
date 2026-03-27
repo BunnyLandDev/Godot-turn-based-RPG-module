@@ -16,6 +16,13 @@ func Attack(skill):
 			target.RecieveDamage(Damage, skill.SkillType)
 		RefreshCooldowns()
 		Cooldowns[index] = Skills[index].SkillCooldown
+		AttackSignal.emit()
+
+func MobAttack():
+	if randi_range(0, 1) == 1 and Cooldowns[1] == 0:
+		Attack(Skills[1])
+	else:
+		Attack(Skills[0])
 
 func CalculateDamage(skill):
 	var Damage: float = get_parent().get(skill.SkillType)

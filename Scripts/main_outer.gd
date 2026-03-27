@@ -7,6 +7,8 @@ var EnemyEntity
 const ENTITY = preload("res://Nodes/entity.tscn")
 const SLIME = preload("res://Resources/Mobs/Slime.tres")
 
+var currentTurn
+
 func _ready() -> void:
 	PlayerEntity = ENTITY.instantiate()
 	add_child(PlayerEntity)
@@ -21,3 +23,11 @@ func _ready() -> void:
 	
 	PlayerEntity.CurrentTargets.append(EnemyEntity)
 	EnemyEntity.CurrentTargets.append(PlayerEntity)
+	PlayerEntity.AttackNode.AttackSignal.connect(changeTurn.bind(EnemyEntity))
+	EnemyEntity.AttackNode.AttackSignal.connect(changeTurn.bind(PlayerEntity))
+
+func changeTurn(target):
+	currentTurn = target
+	await get_tree().create_timer(1).timeout
+	if target == EnemyEntity:
+		EnemyEntity.MobAttack()

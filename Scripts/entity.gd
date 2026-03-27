@@ -51,3 +51,6 @@ func _on_entity_sprite_animtaion_finished():
 
 func AttackAnim() -> void:
 	entity_sprite.play("hit")
+
+func MobAttack():
+	AttackNode.MobAttack()
