@@ -36,7 +36,10 @@ func changeTurn(target) -> void:
 	else:
 		PlayerTurn.emit(true)
 		await get_tree().create_timer(1).timeout
-		EnemyEntity.MobAttack()
+		if not is_instance_valid(EnemyEntity):
+			EnemyEntity = null
+		if EnemyEntity:
+			EnemyEntity.MobAttack()
 
 func SelectTurn():
 	if randi_range(0, 1) == 0:

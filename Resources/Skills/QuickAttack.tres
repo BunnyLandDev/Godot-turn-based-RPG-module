@@ -4,7 +4,7 @@
 
 [resource]
 script = ExtResource("1_66voy")
-SkillName = "Quick Attack"
-SkillPower = 50.0
-SkillType = "Dex"
-SkillCooldown = 3
+SkillName = "Magic Attack"
+SkillPower = 100.0
+SkillType = "Int"
+SkillCooldown = 5
