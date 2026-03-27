@@ -9,6 +9,8 @@ const SLIME = preload("res://Resources/Mobs/Slime.tres")
 
 var currentTurn
 
+signal PlayerTurn(boolean)
+
 func _ready() -> void:
 	PlayerEntity = ENTITY.instantiate()
 	add_child(PlayerEntity)
@@ -25,9 +27,19 @@ func _ready() -> void:
 	EnemyEntity.CurrentTargets.append(PlayerEntity)
 	PlayerEntity.AttackNode.AttackSignal.connect(changeTurn.bind(EnemyEntity))
 	EnemyEntity.AttackNode.AttackSignal.connect(changeTurn.bind(PlayerEntity))
+	SelectTurn()
 
-func changeTurn(target):
+func changeTurn(target) -> void:
 	currentTurn = target
-	await get_tree().create_timer(1).timeout
-	if target == EnemyEntity:
+	if target == PlayerEntity:
+		PlayerTurn.emit(false)
+	else:
+		PlayerTurn.emit(true)
+		await get_tree().create_timer(1).timeout
 		EnemyEntity.MobAttack()
+
+func SelectTurn():
+	if randi_range(0, 1) == 0:
+		changeTurn(PlayerEntity)
+	else:
+		changeTurn(EnemyEntity)
