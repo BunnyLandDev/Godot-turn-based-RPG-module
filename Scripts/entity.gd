@@ -1,6 +1,5 @@
 extends Control
 
-
 #Nós
 @export var HealthNode: Node
 @export var AttackNode: Node
@@ -9,11 +8,17 @@ extends Control
 
 #Alvos
 var CurrentTargets: Array
+var SelectedTarget: Node = null
 
 #Status
 var Str: int
 var Dex: int
 var Int: int
+
+#Time
+var Team: String = "" # "ally" ou "enemy"
+var AlliedEntities: Array = []
+var EnemyEntities: Array = []
 
 #Funções
 
@@ -39,7 +44,7 @@ func LoadEntity(TargetRes) -> void:
 
 func RecieveDamage(amount, type):
 	HealthNode.TakeDamage(amount, type)
-	entity_sprite.play("hurt")
+	#entity_sprite.play("hurt")
 
 func Death():
 	queue_free()
@@ -50,7 +55,8 @@ func _on_entity_sprite_animtaion_finished():
 		entity_sprite.play("idle")
 
 func AttackAnim() -> void:
-	entity_sprite.play("hit")
+	pass
+	#entity_sprite.play("hit")
 
 func MobAttack():
 	AttackNode.MobAttack()

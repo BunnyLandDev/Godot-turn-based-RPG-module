@@ -1,5 +1,6 @@
 extends Node
 
+var Name: String = "Warrior"
 var MaxHP: float = 10
 var CurrentHP: float = 10
 var Str: int = 5
