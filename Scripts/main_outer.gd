@@ -39,7 +39,7 @@ func _ready() -> void:
 	player_entity_rogue.position = Vector2(200, 600)
 	AlliesTeam.append(player_entity_rogue)
 	
-	# Criar inimigos (começar com 1 slime, permitir mais depois)
+	# Criar inimigos
 	var enemy_slime = ENTITY.instantiate()
 	add_child(enemy_slime)
 	enemy_slime.LoadEntity(SLIME)
@@ -75,13 +75,13 @@ func _setup_entity_references() -> void:
 	for ally in AlliesTeam:
 		ally.AlliedEntities = AlliesTeam
 		ally.EnemyEntities = EnemiesTeam
-		ally.AttackNode.AttackSignal.connect(NextTurn)
+		ally.AttackNode.ActionResolved.connect(NextTurn)
 		ally.HealthNode.Death.connect(_on_entity_died.bind(ally))
 		
 	for enemy in EnemiesTeam:
 		enemy.AlliedEntities = EnemiesTeam
 		enemy.EnemyEntities = AlliesTeam
-		enemy.AttackNode.AttackSignal.connect(NextTurn)
+		enemy.AttackNode.ActionResolved.connect(NextTurn)
 		enemy.HealthNode.Death.connect(_on_entity_died.bind(enemy))
 
 func _on_entity_died(entity: Node) -> void:
@@ -93,11 +93,10 @@ func InitializeTurnQueue() -> void:
 	TurnQueue.clear()
 	TurnQueue.append_array(AlliesTeam)
 	TurnQueue.append_array(EnemiesTeam)
-	TurnQueue.shuffle()  # Ordem aleatória (pode mudar para iniciativa depois)
+	TurnQueue.shuffle()
 	CurrentTurnIndex = 0
 	
-	#for turn in TurnQueue:
-	#	turn.
+	print(TurnQueue)
 	
 	StartNextTurn()
 
@@ -129,11 +128,13 @@ func NextTurn() -> void:
 func StartNextTurn() -> void:
 	"""Inicia o turno da entidade atual"""
 	if TurnQueue.is_empty():
+		print("Lista vazia")
 		return
 		
 	CurrentTurnEntity = TurnQueue[CurrentTurnIndex]
 	
 	if not is_instance_valid(CurrentTurnEntity) or CurrentTurnEntity.HealthNode.CurrentHP <= 0:
+		print("Proximo turno")
 		NextTurn()
 		return
 	
@@ -162,11 +163,19 @@ func _execute_enemy_ai() -> void:
 	CurrentTurnEntity.SelectedTarget = target
 	CurrentTurnEntity.CurrentTargets = [target]
 	
-	# Executar ataque (mesmo padrão da função MobAttack original)
-	if randi_range(0, 1) == 1 and CurrentTurnEntity.AttackNode.Cooldowns[1] == 0:
-		CurrentTurnEntity.AttackNode.Attack(CurrentTurnEntity.AttackNode.Skills[1])
-	else:
+	# Encontra as habilidades disponiveis (fora do cooldown)
+	var available_skills: Array = []
+	for i in range(CurrentTurnEntity.AttackNode.Skills.size()):
+		if CurrentTurnEntity.AttackNode.Cooldowns[i] == 0:
+			available_skills.append(CurrentTurnEntity.AttackNode.Skills[i])
+	
+	# Seleciona uma habilidade aleatória, ou o ataque normal se não tiver nenhuma disponível
+	if available_skills.is_empty():
+		print("No skills available, using first skill anyway")
 		CurrentTurnEntity.AttackNode.Attack(CurrentTurnEntity.AttackNode.Skills[0])
+	else:
+		var chosen_skill = available_skills[randi_range(0, available_skills.size() - 1)]
+		CurrentTurnEntity.AttackNode.Attack(chosen_skill)
 
 func get_current_turn_entity() -> Node:
 	"""Retorna a entidade que está em turno"""

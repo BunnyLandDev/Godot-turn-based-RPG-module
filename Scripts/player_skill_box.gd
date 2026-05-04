@@ -20,15 +20,15 @@ func initiate(player) -> void:
 		newButton.disabled = true
 		SkillButtons.append(newButton)
 
-func _on_player_turn(is_player_turn: bool, _current_entity: Node) -> void:
-	"""Chamado quando mudar o turno"""
+func _on_player_turn(is_player_turn: bool, current_entity: Node) -> void:
+	"""Chamado quando mudar o turno - atualiza PlayerEntity para o turno atual"""
+	PlayerEntity = current_entity  # Always sync to the current active entity
+	
 	if is_player_turn:
 		# Habilitar seleção de alvo
 		SelectedTarget = null
 		_update_target_buttons()
-		# Desabilitar botões de skill até alvo ser selecionado
-		for button in SkillButtons:
-			button.disabled = true
+		_update_skill_button_states()  # Update cooldown states
 	else:
 		# Desabilitar botões quando não é turno do jogador
 		for button in SkillButtons:
@@ -81,9 +81,40 @@ func _on_skill_selected(skill: Resource) -> void:
 		print("Nenhum alvo válido selecionado!")
 		return
 	
+	# Validate skill is in PlayerEntity's skills and not on cooldown
+	var skill_index = PlayerEntity.AttackNode.Skills.find(skill)
+	if skill_index == -1:
+		print("Habilidade não encontrada!")
+		return
+	
+	if PlayerEntity.AttackNode.Cooldowns[skill_index] != 0:
+		print("Habilidade em recarga: ", skill.SkillName)
+		return
+	
 	# Executar o ataque
 	PlayerEntity.AttackNode.Attack(skill)
 	
 	# Limpar seleção de alvo para próximo turno
 	SelectedTarget = null
 	_clear_target_buttons()
+
+func _update_skill_button_states() -> void:
+	"""Atualiza o estado dos botões de habilidade com base em recarga e seleção de alvo"""
+	if PlayerEntity == null:
+		return
+	
+	for i in range(SkillButtons.size()):
+		var button = SkillButtons[i]
+		var cooldown = PlayerEntity.AttackNode.Cooldowns[i]
+		
+		if SelectedTarget == null:
+			# Aguardando seleção de alvo
+			button.disabled = true
+		elif cooldown > 0:
+			# Habilidade em recarga
+			button.disabled = true
+			button.text = PlayerStats.Skills[i].SkillName + " (CD: " + str(cooldown) + ")"
+		else:
+			# Habilidade disponível
+			button.disabled = false
+			button.text = PlayerStats.Skills[i].SkillName
